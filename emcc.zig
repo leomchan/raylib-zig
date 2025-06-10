@@ -15,17 +15,9 @@ pub fn emscriptenRunStep(b: *std.Build) !*std.Build.Step.Run {
     defer b.allocator.free(emrun_run_arg);
 
     if (b.sysroot == null) {
-        emrun_run_arg = try std.fmt.bufPrint(
-            emrun_run_arg,
-            "{s}",
-            .{ emrunExe }
-        );
+        emrun_run_arg = try std.fmt.bufPrint(emrun_run_arg, "{s}", .{emrunExe});
     } else {
-        emrun_run_arg = try std.fmt.bufPrint(
-            emrun_run_arg,
-            "{s}" ++ std.fs.path.sep_str ++ "{s}",
-            .{ b.sysroot.?, emrunExe }
-        );
+        emrun_run_arg = try std.fmt.bufPrint(emrun_run_arg, "{s}" ++ std.fs.path.sep_str ++ "{s}", .{ b.sysroot.?, emrunExe });
     }
 
     const run_cmd = b.addSystemCommand(&[_][]const u8{ emrun_run_arg, emccOutputDir ++ emccOutputFile });
@@ -83,11 +75,7 @@ pub fn linkWithEmscripten(
     defer b.allocator.free(emcc_run_arg);
 
     if (b.sysroot == null) {
-        emcc_run_arg = try std.fmt.bufPrint(
-            emcc_run_arg,
-            "{s}",
-            .{ emccExe }
-        );
+        emcc_run_arg = try std.fmt.bufPrint(emcc_run_arg, "{s}", .{emccExe});
     } else {
         emcc_run_arg = try std.fmt.bufPrint(
             emcc_run_arg,
@@ -114,12 +102,10 @@ pub fn linkWithEmscripten(
     emcc_command.addArgs(&[_][]const u8{
         "-o",
         emccOutputDir ++ emccOutputFile,
-        "-sUSE_OFFSET_CONVERTER",
-        "-sFULL-ES3=1",
         "-sUSE_GLFW=3",
+        "-sEXPORTED_RUNTIME_METHODS=ccall",
         "-sASYNCIFY",
         "-O3",
-        "--emrun",
     });
     return emcc_command;
 }
